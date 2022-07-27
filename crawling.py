@@ -228,12 +228,15 @@ if __name__ == '__main__':
                                                                '// *[ @ id = "aform"] / div[2] / div[%d] / div[1] / div[2] / ul / li / a' %(i)).text #파일 이름을 가져옴
                                 download_wait(downloadPath)
                                 createDirectory(tempDirectory + "/answers")
+                                teacherName = driver.find_element(By.XPATH,
+                                                    '// *[ @ id = "aform"] / div[2] / div[2] / div[1] / div[1] / ul / li[1] / span').text  # 파일 이름을 가져옴
+                                createDirectory(tempDirectory + "/answers/" + teacherName)
                                 if os.path.isdir(downloadPath):  # Check this path = path to folder
                                     file_path = os.path.join(downloadPath, fileName)
                                     print("file_path " + file_path)
                                     month, day = months[m].strip().split()
 
-                                    t = tempDirectory + "/answers/" + years[y] + "_" + month + "_" + day + str(
+                                    t = tempDirectory + "/answers/" + teacherName + "/" + years[y] + "_" + month + "_" + day + str(
                                         n) + ".hwp"
                                     print(t)
                                     os.rename(file_path, t)
