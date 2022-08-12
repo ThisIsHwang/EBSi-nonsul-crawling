@@ -9,11 +9,11 @@ from selenium.webdriver.common.keys import Keys
 import time
 import os
 
-downloadPath = '/Users/jaecheol/opt/anaconda3/envs/crawling/downloaded'
+downloadPath = '/Users/hwangyun/Desktop/crawling'
 
 options = webdriver.ChromeOptions()
-#options.add_argument("start-maximized")
-options.add_argument("headless")
+options.add_argument("start-maximized")
+#options.add_argument("headless")
 options.add_argument("lang=ko_KR")  # 가짜 플러그인 탑재
 options.add_experimental_option('prefs', {"download.default_directory": downloadPath})
 driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
@@ -271,6 +271,7 @@ if __name__ == '__main__':
                                         os.rename(file_path, t)
 
                                 i = 2
+                                fuckingNoFileFlag2 = False
                                 while True:
                                     try: #
                                         element = WebDriverWait(driver, 10).until(
@@ -284,27 +285,38 @@ if __name__ == '__main__':
                                         print(e)
                                         i += 2
                                         if i > 6:
+                                            fuckingNoFileFlag2 = True
                                             break
                                         time.sleep(2)  # 답안 다운로드
                                         continue
 
-                                #// *[ @ id = "aform"] / div[2] / div[2] / div[1] / div[2] / ul / li / a
+                                if not fuckingNoFileFlag2:
+                                    download_wait(downloadPath)
+                                    fileName = driver.find_element(By.XPATH,
+                                                                   '// *[ @ id = "aform"] / div[2] / div[%d] / div[1] / div[2] / ul / li / a' % (
+                                                                       i)).text  # 파일 이름을 가져옴
 
-                                download_wait(downloadPath)
-                                #createDirectory(tempDirectory + "/answers")
-                                fileName = driver.find_element(By.XPATH,
-                                                               '// *[ @ id = "aform"] / div[2] / div[%d] / div[1] / div[2] / ul / li / a' %(i)).text  # 파일 이름을 가져옴
+                                    file_name, postfix = splitFileName(fileName)
+                                    if os.path.isdir(downloadPath):  # Check this path = path to folder
+                                        file_path = os.path.join(downloadPath, file_name + "." + postfix)
+                                        print("file_path " + file_path)
+                                        month, day = months[m].strip().split()
 
-                                file_name, postfix = splitFileName(fileName)
-                                if os.path.isdir(downloadPath):  # Check this path = path to folder
-                                    file_path = os.path.join(downloadPath, file_name + "." + postfix)
-                                    print("file_path " + file_path)
-                                    month, day = months[m].strip().split()
+                                        t = tempDirectory + "/answers/" + years[
+                                            y] + "_" + month + "_" + day + "_feedback_" + teacherName + "_" + str(
+                                            nonsulNum - n) + "." + postfix
+                                        print(t)
+                                        os.rename(file_path, t)
+                                else:
+                                    if os.path.isdir(downloadPath):
+                                        month, day = months[m].strip().split()
+                                        path = tempDirectory + "/answers/" + years[
+                                            y] + "_" + month + "_" + day + "_feedback_" + teacherName + "_" + str(
+                                            nonsulNum - n) + ".empty"
 
-                                    t = tempDirectory + "/answers/" + years[y] + "_" + month + "_" + day + "_feedback_" + teacherName + "_" + str(
-                                        nonsulNum - n) + "." + postfix
-                                    print(t)
-                                    os.rename(file_path, t)
+                                        with open(path, "w") as file:
+                                            file.write("")
+                                fuckingNoFileFlag2 = True
                                 n += 1
 
                         except Exception as e:
