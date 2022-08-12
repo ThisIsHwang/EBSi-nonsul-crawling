@@ -9,14 +9,14 @@ from selenium.webdriver.common.keys import Keys
 import time
 import os
 
-downloadPath = '/Users/hwangyun/Desktop/crawling'
+downloadPath = '/Users/jaecheol/opt/anaconda3/envs/crawling/downloaded'
 
 options = webdriver.ChromeOptions()
 #options.add_argument("start-maximized")
-#options.add_argument("headless")
+options.add_argument("headless")
 options.add_argument("lang=ko_KR")  # 가짜 플러그인 탑재
 options.add_experimental_option('prefs', {"download.default_directory": downloadPath})
-driver = webdriver.Chrome(executable_path="/Users/hwangyun/Downloads/chromedriver", options=options)
+driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
 
 
 def download_wait(path_to_downloads):
@@ -67,6 +67,10 @@ def splitFileName(fileName):
     return newFileName, postfix
 
 if __name__ == '__main__':
+    stop_m = 18
+    stop_n = 39
+    m_tempFlag = False
+    n_tempFlag = False
 
     try:
         driver.get('https://www.ebsi.co.kr/ebs/pot/potg/retrievewEsyRmList.ebs')
@@ -81,6 +85,7 @@ if __name__ == '__main__':
         #선택할 수 있는 년도를 뽑아냄
         print("years length is ", len(years))
         y = 0
+
         while y < len(years):
             tempYearDirectory = downloadPath + "/" + years[y]
             createDirectory(tempYearDirectory)
@@ -106,7 +111,11 @@ if __name__ == '__main__':
                 continue
             print("months length is ", len(months))
 
-            m = 0
+            if not m_tempFlag:
+                m = stop_m
+                m_tempFlag = True
+            else:
+                m = 0
             while m < len(months):
                 tempDirectory = tempYearDirectory + "/" + months[m].strip() #년도를 뽑아내서 제거함
                 createDirectory(tempDirectory) #년수와 달의 폴더를 만듬
@@ -163,7 +172,11 @@ if __name__ == '__main__':
 
                     driver.find_element(By.XPATH, '// *[ @ id = "pageSize"] / option[5]').click()
                     time.sleep(2)
-                    n = 0
+                    if not n_tempFlag:
+                        n = stop_n
+                        n_tempFlag = True
+                    else:
+                        n = 0
                     while n < nonsulNum:
                         clickFlag = False
                         try:
@@ -186,7 +199,9 @@ if __name__ == '__main__':
                             time.sleep(2)
                             t = driver.find_element(By.XPATH, '// *[ @ id = "frm"] / div[8] / ul / li[%d] / div[2] / p' % (tn)).text #답변 대기인지 여부 체크
 
-                            print("n", n)
+                            print()
+                            print(f"y: {y} m: {m} n: {n} ")
+                            print(f"{years[y]} {months[m].strip()} {nonsulNum-n}")
 
                             if t == "답변대기":
                                 n += 1
@@ -224,7 +239,7 @@ if __name__ == '__main__':
                                     text = WebDriverWait(driver, 10).until(
                                         EC.element_to_be_clickable(
                                             (By.XPATH,
-                                             '//*[@id="dispContent1"]/p'))
+                                             '//*[@id="aform"]/div[2]/div[1]/div[2]'))
                                     ).text
 
                                     if os.path.isdir(downloadPath):
@@ -291,8 +306,9 @@ if __name__ == '__main__':
                                     print(t)
                                     os.rename(file_path, t)
                                 n += 1
+
                         except Exception as e:
-                            print("occured excpetion from nonsul part", e)
+                            print(f"occured excpetion from nonsul part m: {m} n: {n}", e)
                             continue
 
                         finally:
@@ -300,6 +316,7 @@ if __name__ == '__main__':
                                 driver.back()
                                 clickFlag = False
                     m += 1
+
 
                 except Exception as e:
                     print("occured excpetion from month part", e)
