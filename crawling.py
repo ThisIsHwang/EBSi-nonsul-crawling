@@ -231,7 +231,7 @@ if __name__ == '__main__':
                                         month, day = months[m].strip().split()
                                         path = tempDirectory + "/answers/" + years[
                                             y] + "_" + month + "_" + day + "_studAnswer_" + teacherName + "_" + str(
-                                            n) + ".txt"
+                                            nonsulNum - n) + ".txt"
                                         print(path)
                                         print(text)
                                         with open(path, "w") as file:
@@ -251,7 +251,7 @@ if __name__ == '__main__':
 
                                         t = tempDirectory + "/answers/" + years[
                                             y] + "_" + month + "_" + day + "_studAnswer_" + teacherName + "_" + str(
-                                            n) + "." + postfix
+                                            nonsulNum - n) + "." + postfix
                                         print(t)
                                         os.rename(file_path, t)
 
@@ -287,7 +287,7 @@ if __name__ == '__main__':
                                     month, day = months[m].strip().split()
 
                                     t = tempDirectory + "/answers/" + years[y] + "_" + month + "_" + day + "_feedback_" + teacherName + "_" + str(
-                                        n) + "." + postfix
+                                        nonsulNum - n) + "." + postfix
                                     print(t)
                                     os.rename(file_path, t)
                                 n += 1
