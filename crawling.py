@@ -13,7 +13,7 @@ downloadPath = '/Users/hwangyun/Desktop/crawling'
 
 options = webdriver.ChromeOptions()
 #options.add_argument("start-maximized")
-options.add_argument("headless")
+#options.add_argument("headless")
 options.add_argument("lang=ko_KR")  # 가짜 플러그인 탑재
 options.add_experimental_option('prefs', {"download.default_directory": downloadPath})
 driver = webdriver.Chrome(executable_path="/Users/hwangyun/Downloads/chromedriver", options=options)
@@ -114,7 +114,7 @@ if __name__ == '__main__':
                     print()
                 try:
                     print(y, m)
-                    clickIt('//*[@id="bbsId"]/option[%d]' % (m + 1 + 2))
+                    clickIt('//*[@id="bbsId"]/option[%d]' % (m + 1))
 
                     driver.implicitly_wait(1)
                     element = WebDriverWait(driver, 10).until(
